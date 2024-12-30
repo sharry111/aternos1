@@ -15,12 +15,6 @@ bot.on('spawn', () => {
   console.log("Bot has connected to the server!");
 });
 
-// Bot Event: When the bot receives a message in chat
-bot.on('chat', (username, message) => {
-  if (username === bot.username) return;
-  bot.chat(`Hello ${username}, you said: ${message}`);
-});
-
 // Bot Event: Error handling
 bot.on('error', (err) => {
   console.error("Bot error:", err);
