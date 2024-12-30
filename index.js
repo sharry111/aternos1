@@ -4,7 +4,6 @@ const mineflayer = require('mineflayer');
 const app = express();
 const PORT = process.env.PORT || 3000; // Use Render's assigned port or default to 3000
 
-const mineflayer = require('mineflayer')
 function createBot () {
 const bot = mineflayer.createBot({
   host: 'DeadBEDSMP.aternos.me', //ACA VA LA IP DE TU SERVIDOR  // SERVER IP
