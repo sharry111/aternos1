@@ -1,81 +1,60 @@
 const express = require('express');
 const mineflayer = require('mineflayer');
 
+// Initialize the Express app
 const app = express();
-const PORT = process.env.PORT || 3000; // Use Render's assigned port or default to 3000
 
-function createBot () {
+// Port binding for Render (uses PORT environment variable)
+const PORT = process.env.PORT || 3000;
+
+// Create the Minecraft bot instance
 const bot = mineflayer.createBot({
-  host: 'DeadBEDSMP.aternos.me', //ACA VA LA IP DE TU SERVIDOR  // SERVER IP
-  username: 'PuchkiXD', // ACA VA EL NOMBRE DEL BOT  // BOT NAME
-  port: 42585, // PUERTO DEL SERVIDOR // SERVER PORT
-  version: '1.16.5',
-})
+  host: 'DeadBEDSMP.aternos.me', // Replace with your server IP or domain
+  port: 42585,                  // Replace with the server port (default: 25565)
+  username: 'PuchkiXD',  // Replace with the bot's username
+  // password: 'YourPassword',  // Uncomment and provide a password if using online mode
+});
 
+// Handle bot spawn event
 bot.on('spawn', () => {
-  bot.chat('/register contraseña')  
+  console.log('Bot has connected to the Minecraft server.');
 });
 
-//NO TOCAR/// DO NOT TOUCH
-
-bot.on("move", function() {
-  //triggers when the bot moves
-  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-
-  bot.setControlState("jump", true); //continuously jumps
-  setTimeout(() => {
-    //sets a delay
-    bot.setControlState("jump", false); //stops jumping
-  }, 1000); //delay time
-  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-
-  setTimeout(() => {
-    //sets a delay
-    //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-    bot.setControlState("forward", true); //continuously walks forward
-    setTimeout(() => {
-      //sets a delay
-      bot.setControlState("forward", false); //stops walking forward
-    }, 500); //delay time
-  }, 1000); //delay time
-  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-
-  setTimeout(() => {
-    //sets a delay
-    bot.setControlState("back", true); //continuously walks backwards
-    setTimeout(() => {
-      //sets a delay
-      bot.setControlState("back", false); //stops walking backwards
-    }, 500); //delay time
-  }, 2000); //delay time
-
-  setTimeout(() => {
-    //sets a delay
-    //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-    bot.setControlState("right", true); //continuously walks right
-    setTimeout(() => {
-      //sets a delay
-      bot.setControlState("right", false); //stops walking right
-    }, 2000); //delay time
-  }, 500); //delay time
-
-  setTimeout(() => {
-    //sets a delay
-    bot.setControlState("left", true); //continuously walks lefz
-    setTimeout(() => {
-      //sets a delay
-      bot.setControlState("left", false); //stops walking left
-    }, 2000); //delay time
-  }, 500); //delay time
+// Handle chat messages
+bot.on('chat', (username, message) => {
+  if (username === bot.username) return; // Ignore messages from itself
+  console.log(`Chat message from ${username}: ${message}`);
+  bot.chat(`Hello ${username}, you said: "${message}"`);
 });
-  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
 
-bot.on('kicked', console.log)
-bot.on('error', console.log)
-bot.on('end', createBot)
-}
+// Handle bot errors
+bot.on('error', (err) => {
+  console.error('An error occurred:', err);
+});
 
-createBot()
+bot.on('end', () => {
+  console.log('Bot has disconnected from the server.');
+});
 
+// Add a route to check if the bot is running
+app.get('/', (req, res) => {
+  res.send('Minecraft bot is running!');
+});
 
-//DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
+// Add a route to display bot stats
+app.get('/stats', (req, res) => {
+  res.json({
+    username: bot.username,
+    connected: bot.entity ? true : false,
+    server: {
+      host: bot._client.socket.serverHost,
+      port: bot._client.socket.serverPort,
+    },
+    position: bot.entity ? bot.entity.position : null,
+  });
+});
+
+// Start the Express server
+app.listen(PORT, () => {
+  console.log(`Web server is running on port ${PORT}`);
+});
