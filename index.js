@@ -3,9 +3,10 @@ const mineflayer = require('mineflayer');
 
 // Create the Minecraft bot
 const bot = mineflayer.createBot({
-  host: "DeadBEDSMP.aternos.me", // Replace with the server IP
-  port: 42585,                   // Replace with the Minecraft server port (default: 25565)
-  username: "PuchkiXD",   // Replace with your bot's username
+  host: "DeadBEDSMP.aternos.me", 
+  port: 42585, 
+  username: "PuchkiXD", 
+  version: "1.16.5" // Specify the server version (optional, if needed)
   // password: "YourPassword",   // Uncomment if your server requires a password
 });
 
