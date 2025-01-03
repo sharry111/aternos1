@@ -4,8 +4,8 @@ const express = require('express');
 // Configuration
 const SERVER_HOST = 'DeadBEDSMP.aternos.me'; // Minecraft server IP
 const SERVER_PORT = 42585;      // Minecraft server port
-const 'PuchkiXD'; // Bot's username
-const LOGIN_PASSWORD = 'YourSecurePassword'; // Password for login security
+const BOT_USERNAME = 'PuchkiXD'; // Bot's username
+const LOGIN_PASSWORD = '00000000'; // Password for login security
 
 // Create Bot
 const bot = mineflayer.createBot({
