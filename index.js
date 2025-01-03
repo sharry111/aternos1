@@ -1,11 +1,10 @@
 const mineflayer = require('mineflayer');
-const express = require('express');
 
 // Configuration
 const SERVER_HOST = 'DeadBEDSMP.aternos.me'; // Minecraft server IP
 const SERVER_PORT = 42585;      // Minecraft server port
 const BOT_USERNAME = 'PuchkiXD'; // Bot's username
-const LOGIN_PASSWORD = '00000000'; // Password for login security
+const LOGIN_PASSWORD = 'YourSecurePassword'; // Password for login security
 
 // Create Bot
 const bot = mineflayer.createBot({
@@ -49,22 +48,11 @@ bot.on('chat', (username, message) => {
 bot.on('kicked', (reason) => console.log(`[Bot] Kicked: ${reason}`));
 bot.on('error', (err) => console.log(`[Bot] Error: ${err}`));
 
-// Web Server for Bot Status
-const app = express();
-const WEB_PORT = 3000;
-
-app.get('/', (req, res) => {
-  if (!bot.entity) {
-    res.send('<h1>Bot Status</h1><p>Bot is not online.</p>');
-    return;
+// Display Bot Status on Console
+setInterval(() => {
+  if (bot.entity) {
+    console.log(`[Bot Status] Username: ${bot.username}, Position: X=${bot.entity.position.x.toFixed(2)}, Y=${bot.entity.position.y.toFixed(2)}, Z=${bot.entity.position.z.toFixed(2)}`);
+  } else {
+    console.log('[Bot Status] Bot is not online.');
   }
-  res.send(`
-    <h1>Minecraft Bot Status</h1>
-    <p><b>Username:</b> ${bot.username}</p>
-    <p><b>Position:</b> X=${bot.entity.position.x}, Y=${bot.entity.position.y}, Z=${bot.entity.position.z}</p>
-  `);
-});
-
-app.listen(WEB_PORT, () => {
-  console.log(`[Web] Status server running at http://localhost:${WEB_PORT}`);
-});
+}, 5000); // Update every 5 seconds
