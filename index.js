@@ -1,41 +1,78 @@
+const mineflayer = require('mineflayer')
 const http = require('http');
-const mineflayer = require('mineflayer');
 
-// Create the Minecraft bot
+function createBot () {
 const bot = mineflayer.createBot({
-  host: "DeadBEDSMP.aternos.me", // Replace with the server IP
-  port: 42585,                   // Replace with the Minecraft server port (default: 25565)
-  username: "PuchkiXD",   // Replace with your bot's username
-  // password: "YourPassword",   // Uncomment if your server requires a password
-});
+  host: 'DeadBEDSMP.aternos.me', //ACA VA LA IP DE TU SERVIDOR  // SERVER IP
+  username: 'PuchkiXD', // ACA VA EL NOMBRE DEL BOT  // BOT NAME
+  port: 42585, // PUERTO DEL SERVIDOR // SERVER PORT
+  version: '1.16.5',
+})
 
-// Bot Event: When the bot joins the server
 bot.on('spawn', () => {
-  console.log("Bot has connected to the server!");
+  bot.chat('/register contraseña')  
 });
 
-// Handle Login Security
-bot.on('message', (message) => {
-  const msg = message.toString();
+//NO TOCAR/// DO NOT TOUCH
 
-  if (msg.includes('Please login')) {
-    console.log('[Bot] Server requests login.');
-    bot.chat(`/login ${LOGIN_PASSWORD}`);
-  } else if (msg.includes('Please register')) {
-    console.log('[Bot] Server requests registration.');
-    bot.chat(`/register ${LOGIN_PASSWORD}`);
-  }
-});
+bot.on("move", function() {
+  //triggers when the bot moves
+  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
 
-// Bot Event: Error handling
-bot.on('error', (err) => {
-  console.error("Bot error:", err);
-});
+  bot.setControlState("jump", true); //continuously jumps
+  setTimeout(() => {
+    //sets a delay
+    bot.setControlState("jump", false); //stops jumping
+  }, 1000); //delay time
+  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
 
-// Bot Event: When the bot disconnects from the server
-bot.on('end', () => {
-  console.log("Bot has disconnected.");
+  setTimeout(() => {
+    //sets a delay
+    //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
+    bot.setControlState("forward", true); //continuously walks forward
+    setTimeout(() => {
+      //sets a delay
+      bot.setControlState("forward", false); //stops walking forward
+    }, 500); //delay time
+  }, 1000); //delay time
+  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
+
+  setTimeout(() => {
+    //sets a delay
+    bot.setControlState("back", true); //continuously walks backwards
+    setTimeout(() => {
+      //sets a delay
+      bot.setControlState("back", false); //stops walking backwards
+    }, 500); //delay time
+  }, 2000); //delay time
+
+  setTimeout(() => {
+    //sets a delay
+    //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
+    bot.setControlState("right", true); //continuously walks right
+    setTimeout(() => {
+      //sets a delay
+      bot.setControlState("right", false); //stops walking right
+    }, 2000); //delay time
+  }, 500); //delay time
+
+  setTimeout(() => {
+    //sets a delay
+    bot.setControlState("left", true); //continuously walks lefz
+    setTimeout(() => {
+      //sets a delay
+      bot.setControlState("left", false); //stops walking left
+    }, 2000); //delay time
+  }, 500); //delay time
 });
+  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
+
+bot.on('kicked', console.log)
+bot.on('error', console.log)
+bot.on('end', createBot)
+}
+
+createBot()
 
 // Basic HTTP server to prevent the bot from going idle on Render (required to bind to the port)
 const server = http.createServer((req, res) => {
@@ -50,4 +87,3 @@ const PORT = process.env.PORT || 3000; // Default to 3000 if no port is specifie
 server.listen(PORT, () => {
   console.log(`Web server is running on port ${PORT}`);
 });
-
