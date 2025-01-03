@@ -1,26 +1,18 @@
+const http = require('http');
 const mineflayer = require('mineflayer');
-const net = require('net');
 
-// Configuration
-const SERVER_HOST = 'DeadBEDSMP.aternos.me'; // Minecraft server IP
-const SERVER_PORT = 42585;      // Minecraft server port
-const BOT_USERNAME = 'PuchkiXD'; // Bot's username
-const LOGIN_PASSWORD = '00000000'; // Password for login security
-const RENDER_PORT = 3000;       // Port for render server
-
-// Create Bot
+// Create the Minecraft bot
 const bot = mineflayer.createBot({
-  host: SERVER_HOST,
-  port: SERVER_PORT,
-  username: BOT_USERNAME,
+  host: "DeadBEDSMP.aternos.me", // Replace with the server IP
+  port: 42585,                   // Replace with the Minecraft server port (default: 25565)
+  username: "PuchkiXD",   // Replace with your bot's username
+  const LOGIN_PASSWORD = '00000000'; // Password for login security
+  // password: "YourPassword",   // Uncomment if your server requires a password
 });
 
-bot.on('login', () => {
-  console.log(`[Bot] Successfully logged in as ${bot.username}`);
-});
-
+// Bot Event: When the bot joins the server
 bot.on('spawn', () => {
-  console.log(`[Bot] Spawned in the world.`);
+  console.log("Bot has connected to the server!");
 });
 
 // Handle Login Security
@@ -32,61 +24,31 @@ bot.on('message', (message) => {
     bot.chat(`/login ${LOGIN_PASSWORD}`);
   } else if (msg.includes('Please register')) {
     console.log('[Bot] Server requests registration.');
-    bot.chat(`/register ${LOGIN_PASSWORD} ${LOGIN_PASSWORD}`);
+    bot.chat(`/register ${LOGIN_PASSWORD}`);
   }
 });
 
-// Handle Chat Messages
-bot.on('chat', (username, message) => {
-  if (username === bot.username) return; // Ignore bot's own messages
-  console.log(`[Chat] ${username}: ${message}`);
-  if (message.toLowerCase() === 'hello bot') {
-    bot.chat('Hello! I am here to assist.');
-  }
+// Bot Event: Error handling
+bot.on('error', (err) => {
+  console.error("Bot error:", err);
 });
 
-// Handle Errors
-bot.on('kicked', (reason) => console.log(`[Bot] Kicked: ${reason}`));
-bot.on('error', (err) => console.log(`[Bot] Error: ${err}`));
-
-// Render Port Binder
-const server = net.createServer((socket) => {
-  console.log('[Render Port] Connection established.');
-
-  // Send bot status to the client
-  socket.write(`Minecraft Bot Status\n`);
-  socket.write(`Username: ${bot.username || 'Not connected'}\n`);
-
-  if (bot.entity) {
-    socket.write(
-      `Position: X=${bot.entity.position.x.toFixed(2)}, Y=${bot.entity.position.y.toFixed(2)}, Z=${bot.entity.position.z.toFixed(2)}\n`
-    );
-  } else {
-    socket.write('Bot is not online.\n');
-  }
-
-  socket.on('data', (data) => {
-    const command = data.toString().trim();
-    console.log(`[Render Port] Received command: ${command}`);
-
-    if (command === 'status') {
-      if (bot.entity) {
-        socket.write(
-          `Status: Online, Position: X=${bot.entity.position.x.toFixed(2)}, Y=${bot.entity.position.y.toFixed(2)}, Z=${bot.entity.position.z.toFixed(2)}\n`
-        );
-      } else {
-        socket.write('Status: Bot is not online.\n');
-      }
-    } else {
-      socket.write(`Unknown command: ${command}\n`);
-    }
-  });
-
-  socket.on('close', () => {
-    console.log('[Render Port] Connection closed.');
-  });
+// Bot Event: When the bot disconnects from the server
+bot.on('end', () => {
+  console.log("Bot has disconnected.");
 });
 
-server.listen(RENDER_PORT, () => {
-  console.log(`[Render Port] Listening on port ${RENDER_PORT}`);
+// Basic HTTP server to prevent the bot from going idle on Render (required to bind to the port)
+const server = http.createServer((req, res) => {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('Minecraft bot is running!\n');
 });
+
+// Get the port from the environment variable (Render assigns a dynamic port)
+const PORT = process.env.PORT || 3000; // Default to 3000 if no port is specified
+
+// Start the HTTP server on the assigned port
+server.listen(PORT, () => {
+  console.log(`Web server is running on port ${PORT}`);
+});
+
