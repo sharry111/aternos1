@@ -11,7 +11,7 @@ const botConfig = {
 };
 
 // Login security configuration
-const loginPassword = '00000000'; // Password for the bot's account on the server
+const loginPassword = '00000000000'; // Password for the bot's account on the server
 
 // HTTP server configuration
 const HTTP_PORT = 10000; // Port for the HTTP server
