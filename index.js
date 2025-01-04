@@ -1,89 +1,86 @@
-const mineflayer = require('mineflayer')
-const http = require('http');
+const mineflayer = require('mineflayer');
+const net = require('net'); // For creating a TCP server
 
-function createBot () {
-const bot = mineflayer.createBot({
-  host: 'DeadBEDSMP.aternos.me', //ACA VA LA IP DE TU SERVIDOR  // SERVER IP
-  username: 'PuchkiXD', // ACA VA EL NOMBRE DEL BOT  // BOT NAME
-  port: 42585, // PUERTO DEL SERVIDOR // SERVER PORT
-  version: '1.16.5',
-})
+// Bot configuration
+const botConfig = {
+  host: 'DeadBEDSMP.aternos.me', // Replace with your Minecraft server IP or hostname
+  port: 42585,       // Replace with your Minecraft server port
+  username: 'PuchiXD', // Bot's Minecraft username
+  version: '1.20.1',   // Specify the Minecraft version
+};
 
+// Render server configuration
+const RENDER_PORT = 3000; // Port for the TCP server
+
+// Create the bot
+const bot = mineflayer.createBot(botConfig);
+
+// Event: On bot login
+bot.on('login', () => {
+  console.log(`[Bot] Logged in as ${bot.username}`);
+});
+
+// Event: On chat message
+bot.on('chat', (username, message) => {
+  if (username === bot.username) return; // Ignore bot's own messages
+
+  console.log(`[Chat] ${username}: ${message}`);
+
+  // Commands for the bot
+  if (message === 'register') {
+    bot.chat('To register, please visit our website or contact an admin!');
+  } else if (message === 'login') {
+    bot.chat('You are now logged in!');
+  }
+});
+
+// Event: On bot spawn
 bot.on('spawn', () => {
-  bot.chat('/register contraseña')  
+  console.log('[Bot] Spawned in the world.');
+  bot.chat('Hello! I am a bot ready to assist you!');
 });
 
-//NO TOCAR/// DO NOT TOUCH
-
-bot.on("move", function() {
-  //triggers when the bot moves
-  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-
-  bot.setControlState("jump", true); //continuously jumps
-  setTimeout(() => {
-    //sets a delay
-    bot.setControlState("jump", false); //stops jumping
-  }, 1000); //delay time
-  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-
-  setTimeout(() => {
-    //sets a delay
-    //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-    bot.setControlState("forward", true); //continuously walks forward
-    setTimeout(() => {
-      //sets a delay
-      bot.setControlState("forward", false); //stops walking forward
-    }, 500); //delay time
-  }, 1000); //delay time
-  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-
-  setTimeout(() => {
-    //sets a delay
-    bot.setControlState("back", true); //continuously walks backwards
-    setTimeout(() => {
-      //sets a delay
-      bot.setControlState("back", false); //stops walking backwards
-    }, 500); //delay time
-  }, 2000); //delay time
-
-  setTimeout(() => {
-    //sets a delay
-    //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-    bot.setControlState("right", true); //continuously walks right
-    setTimeout(() => {
-      //sets a delay
-      bot.setControlState("right", false); //stops walking right
-    }, 2000); //delay time
-  }, 500); //delay time
-
-  setTimeout(() => {
-    //sets a delay
-    bot.setControlState("left", true); //continuously walks lefz
-    setTimeout(() => {
-      //sets a delay
-      bot.setControlState("left", false); //stops walking left
-    }, 2000); //delay time
-  }, 500); //delay time
-});
-  //DONT MODIFY THE CODE, THIS CODE WAS CREATED BY JINMORI (YOUTUBE @JIMORIYT). READ THE LICENSE.
-
-bot.on('kicked', console.log)
-bot.on('error', console.log)
-bot.on('end', createBot)
-}
-
-createBot()
-
-// Basic HTTP server to prevent the bot from going idle on Render (required to bind to the port)
-const server = http.createServer((req, res) => {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('Minecraft bot is running!\n');
+// Event: On error
+bot.on('error', (err) => {
+  console.error(`[Error] ${err.message}`);
 });
 
-// Get the port from the environment variable (Render assigns a dynamic port)
-const PORT = process.env.PORT || 3000; // Default to 3000 if no port is specified
+// Event: On bot disconnect
+bot.on('end', () => {
+  console.log('[Bot] Bot has been disconnected.');
+});
 
-// Start the HTTP server on the assigned port
-server.listen(PORT, () => {
-  console.log(`Web server is running on port ${PORT}`);
+// Create a TCP server for external communication
+const server = net.createServer((socket) => {
+  console.log('[Render Server] Client connected.');
+
+  socket.on('data', (data) => {
+    const message = data.toString().trim();
+    console.log(`[Render Server] Received: ${message}`);
+
+    // Handle incoming messages (e.g., commands or requests)
+    if (message === 'status') {
+      const status = bot.entity ? 'Online' : 'Offline';
+      socket.write(`Bot Status: ${status}\n`);
+    } else if (message.startsWith('say ')) {
+      const chatMessage = message.slice(4);
+      bot.chat(chatMessage);
+      socket.write(`Bot said: ${chatMessage}\n`);
+    } else {
+      socket.write('Unknown command.\n');
+    }
+  });
+
+  socket.on('end', () => {
+    console.log('[Render Server] Client disconnected.');
+  });
+
+  socket.on('error', (err) => {
+    console.error(`[Render Server Error] ${err.message}`);
+  });
+});
+
+// Start the render server
+server.listen(RENDER_PORT, () => {
+  console.log(`[Render Server] Listening on port ${RENDER_PORT}`);
 });
