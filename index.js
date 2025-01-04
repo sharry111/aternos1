@@ -14,7 +14,7 @@ const botConfig = {
 const loginPassword = '00000000'; // Password for the bot's account on the server
 
 // HTTP server configuration
-const HTTP_PORT = 3000; // Port for the HTTP server
+const HTTP_PORT = 10000; // Port for the HTTP server
 
 // Create the bot
 let bot = createBot();
