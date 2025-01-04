@@ -10,7 +10,7 @@ const botConfig = {
 };
 
 // Render server configuration
-const RENDER_PORT = 3000; // Port for the TCP server
+const RENDER_PORT = 1000; // Port for the TCP server
 
 // Create the bot
 const bot = mineflayer.createBot(botConfig);
