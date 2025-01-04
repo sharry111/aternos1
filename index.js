@@ -10,7 +10,7 @@ const botConfig = {
 };
 
 // HTTP server configuration
-const HTTP_PORT = 1000; // Port for the HTTP server
+const HTTP_PORT = 10000; // Port for the HTTP server
 
 // Create the bot
 const bot = mineflayer.createBot(botConfig);
