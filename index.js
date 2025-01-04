@@ -3,59 +3,65 @@ const http = require('http');
 
 // Bot configuration
 const botConfig = {
-  host: 'DeadBEDSMP.aternos.me', // Replace with your Minecraft server IP or hostname
-  port: 42585,       // Replace with your Minecraft server port
-  username: 'PuchkiXD', // Replace with your bot's username
-  password: '0000000000', // Optional: Include for premium servers
-  version: '1.20.1', // Match your server's Minecraft version (use false for auto-detection)
+  host: 'DeadBEDSMP.aternos.me',       // Replace with your Minecraft server IP or hostname
+  port: 42585,             // Replace with your Minecraft server port
+  username: 'PuchkiXD',     // Replace with the bot's username
+  password: null,          // No Mojang/Microsoft account password needed for offline servers
+  version: '1.20.1',       // Match your server's Minecraft version (use `false` for auto-detection)
 };
 
+// Login security configuration
+const loginPassword = '00000000'; // Password for the bot's account on the server
+
 // HTTP server configuration
-const HTTP_PORT = 4000; // Port for the HTTP server
+const HTTP_PORT = 3000; // Port for the HTTP server
 
 // Create the bot
-const bot = mineflayer.createBot(botConfig);
+let bot = createBot();
 
-// Handle bot events
-bot.on('login', () => {
-  console.log(`[Bot] Logged in as ${bot.username}`);
-});
+function createBot() {
+  const newBot = mineflayer.createBot(botConfig);
 
-bot.on('spawn', () => {
-  console.log('[Bot] Spawned in the world.');
-  bot.chat('Hello! I am online and ready to assist!');
-});
+  // Handle bot events
+  newBot.on('login', () => {
+    console.log(`[Bot] Logged in as ${newBot.username}`);
+  });
 
-bot.on('chat', (username, message) => {
-  if (username === bot.username) return; // Ignore the bot's own messages
-  console.log(`[Chat] ${username}: ${message}`);
+  newBot.on('spawn', () => {
+    console.log('[Bot] Spawned in the world.');
+    authenticateBot(newBot);
+  });
 
-  if (message === 'register') {
-    bot.chat('To register, please contact an admin or use the provided website!');
-  } else if (message === 'login') {
-    bot.chat('You are now logged in!');
-  }
-});
+  newBot.on('chat', (username, message) => {
+    if (username === newBot.username) return; // Ignore the bot's own messages
+    console.log(`[Chat] ${username}: ${message}`);
+  });
 
-bot.on('error', (err) => {
-  console.error(`[Bot Error] ${err.message}`);
-});
+  newBot.on('error', (err) => {
+    console.error(`[Bot Error] ${err.message}`);
+  });
 
-bot.on('kicked', (reason, loggedIn) => {
-  console.error(`[Bot Kicked] Reason: ${reason}, Logged In: ${loggedIn}`);
-});
+  newBot.on('kicked', (reason, loggedIn) => {
+    console.error(`[Bot Kicked] Reason: ${reason}, Logged In: ${loggedIn}`);
+  });
 
-bot.on('end', () => {
-  console.log('[Bot] Bot has been disconnected. Attempting to reconnect...');
-  reconnect();
-});
+  newBot.on('end', () => {
+    console.log('[Bot] Disconnected. Reconnecting...');
+    setTimeout(() => {
+      bot = createBot(); // Recreate the bot
+    }, 5000); // Reconnect after 5 seconds
+  });
 
-// Reconnection logic
-function reconnect() {
-  console.log('[Bot] Reconnecting...');
+  return newBot;
+}
+
+// Authenticate the bot with the login plugin
+function authenticateBot(bot) {
+  console.log('[Bot] Attempting to log in to the server...');
   setTimeout(() => {
-    bot = mineflayer.createBot(botConfig);
-  }, 5000); // Attempt reconnect after 5 seconds
+    bot.chat(`/login ${loginPassword}`);
+    console.log('[Bot] Sent login command.');
+  }, 3000); // Wait 3 seconds to ensure the bot is fully spawned
 }
 
 // Create an HTTP server for render port binding
