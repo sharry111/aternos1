@@ -8,7 +8,6 @@ const botConfig = {
   username: 'PuchkiXD', // Replace with your bot's username
   password: '0000000000', // Optional: Include for premium servers
   version: '1.20.1', // Match your server's Minecraft version (use false for auto-detection)
-  auth: 'mojang',    // Use 'microsoft' if the account is linked to Microsoft
 };
 
 // HTTP server configuration
