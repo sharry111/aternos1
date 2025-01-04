@@ -3,10 +3,10 @@ const http = require('http');
 
 // Bot configuration
 const botConfig = {
-  host: 'localhost', // Replace with your Minecraft server IP or hostname
-  port: 25565,       // Replace with your Minecraft server port
-  username: 'BotName', // Replace with your bot's username
-  password: 'YourPassword', // Optional: Include for premium servers
+  host: 'DeadBEDSMP.aternos.me', // Replace with your Minecraft server IP or hostname
+  port: 42585,       // Replace with your Minecraft server port
+  username: 'PuchkiXD', // Replace with your bot's username
+  password: '0000000000', // Optional: Include for premium servers
   version: '1.20.1', // Match your server's Minecraft version (use false for auto-detection)
   auth: 'mojang',    // Use 'microsoft' if the account is linked to Microsoft
 };
