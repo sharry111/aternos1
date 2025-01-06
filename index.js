@@ -8,7 +8,7 @@ const config = {
   username: 'PuchkiXD', // Bot username (ensure uniqueness)
   version: '1.20.1',       // Server version (set to false for auto-detection)
   botPassword: '000000000', // Bot's password for register/login
-  isFirstTime: null,       // Set to true if the bot needs to register
+  isFirstTime: true,       // Set to true if the bot needs to register
   httpPort: 3000,          // HTTP server port
   autoReconnect: true,     // Automatically reconnect on disconnect
   reconnectDelay: 5000,    // Reconnect delay in milliseconds
@@ -60,9 +60,6 @@ function createBot() {
 function handleAuthentication(bot) {
   console.log('[Bot] Authenticating...');
   setTimeout(() => {
-    if (config.isFirstTime) {
-      bot.chat(`/register ${config.botPassword} ${config.botPassword}`);
-      console.log('[Bot] Sent register command.');
     } else {
       bot.chat(`/login ${config.botPassword}`);
       console.log('[Bot] Sent login command.');
