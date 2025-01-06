@@ -3,33 +3,33 @@ const http = require('http');
 
 // Configuration
 const config = {
-  host: 'DeadBEDSMP.aternos.me',       // Replace with your server's IP or hostname
-  port: 42585,             // Server port
-  username: 'PuchkiXD', // Bot username (ensure uniqueness)
-  version: '1.20.1',       // Server version (set to false for auto-detection)
-  botPassword: '000000000', // Bot's password for register/login
-  isFirstTime: true,       // Set to true if the bot needs to register
-  httpPort: 3000,          // HTTP server port
-  autoReconnect: true,     // Automatically reconnect on disconnect
-  reconnectDelay: 5000,    // Reconnect delay in milliseconds
+  host: 'DeadBEDSMP.aternos.me',          // Minecraft server IP or hostname
+  port: 42585,                // Server port
+  username: 'PuchkiXD',  // Bot username
+  version: '1.20.1',          // Minecraft version
+  botPassword: '000000000', // Password for registration/login
+  httpPort: 3000,             // Render port binding (HTTP server)
 };
 
-let bot; // Declare the bot globally
+let isRegistered = false; // Tracks whether the bot has registered
 
-// Function to create and start the bot
+// Create the bot
 function createBot() {
-  bot = mineflayer.createBot({
+  const bot = mineflayer.createBot({
     host: config.host,
     port: config.port,
     username: config.username,
     version: config.version,
   });
 
-  bot.on('login', () => console.log(`[Bot] Logged in as ${bot.username}`));
+  // Handle bot events
+  bot.on('login', () => {
+    console.log(`[Bot] Logged in as ${bot.username}`);
+  });
 
   bot.on('spawn', () => {
     console.log('[Bot] Spawned in the world.');
-    handleAuthentication(bot);
+    authenticateBot(bot);
   });
 
   bot.on('chat', (username, message) => {
@@ -41,25 +41,31 @@ function createBot() {
     console.log('[Server Message]', jsonMsg.toString());
   });
 
-  bot.on('error', (err) => console.error(`[Bot Error] ${err.message}`));
+  bot.on('error', (err) => {
+    console.error(`[Bot Error] ${err.message}`);
+  });
 
   bot.on('kicked', (reason, loggedIn) => {
     console.error(`[Bot Kicked] Reason: ${reason}, Logged In: ${loggedIn}`);
   });
 
   bot.on('end', () => {
-    console.log('[Bot] Disconnected.');
-    if (config.autoReconnect) {
-      console.log(`[Bot] Reconnecting in ${config.reconnectDelay / 1000} seconds...`);
-      setTimeout(createBot, config.reconnectDelay);
-    }
+    console.log('[Bot] Disconnected. Reconnecting...');
+    setTimeout(() => createBot(), 5000); // Reconnect after 5 seconds
   });
+
+  return bot;
 }
 
-// Handle bot authentication (register/login)
-function handleAuthentication(bot) {
+// Authenticate the bot (register or login)
+function authenticateBot(bot) {
   console.log('[Bot] Authenticating...');
+
   setTimeout(() => {
+    if (!isRegistered) {
+      bot.chat(`/register ${config.botPassword} ${config.botPassword}`);
+      console.log('[Bot] Sent register command.');
+      isRegistered = true; // Mark as registered after sending the register command
     } else {
       bot.chat(`/login ${config.botPassword}`);
       console.log('[Bot] Sent login command.');
@@ -67,8 +73,8 @@ function handleAuthentication(bot) {
   }, 3000); // Wait 3 seconds to ensure the bot is fully spawned
 }
 
-// Create an HTTP server for interaction
-function startHttpServer() {
+// HTTP server to interact with the bot
+function startHttpServer(bot) {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const command = url.pathname.slice(1); // Extract command from URL path
@@ -99,5 +105,5 @@ function startHttpServer() {
 }
 
 // Start the bot and HTTP server
-createBot();
-startHttpServer();
+const bot = createBot();
+startHttpServer(bot);
