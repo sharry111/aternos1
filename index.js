@@ -8,7 +8,7 @@ const config = {
   username: 'PuchkiXD', // Bot username (ensure uniqueness)
   version: '1.20.1',       // Server version (set to false for auto-detection)
   botPassword: '000000000', // Bot's password for register/login
-  isFirstTime: false,       // Set to true if the bot needs to register
+  isFirstTime: null,       // Set to true if the bot needs to register
   httpPort: 3000,          // HTTP server port
   autoReconnect: true,     // Automatically reconnect on disconnect
   reconnectDelay: 5000,    // Reconnect delay in milliseconds
