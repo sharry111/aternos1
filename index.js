@@ -5,13 +5,13 @@ const http = require('http');
 const botConfig = {
   host: 'DeadBEDSMP.aternos.me',       // Replace with your Minecraft server IP or hostname
   port: 42585,             // Replace with your Minecraft server port
-  username: 'Puchki',     // Replace with the bot's username
+  username: 'PuchkiXD',     // Replace with the bot's username
   password: null,          // No Mojang/Microsoft account password needed for offline servers
   version: '1.20.1',       // Match your server's Minecraft version (use `false` for auto-detection)
 };
 
 // Login security configuration
-const loginPassword = '00000000000'; // Password for the bot's account on the server
+const loginPassword = '000000000000'; // Password for the bot's account on the server
 
 // HTTP server configuration
 const HTTP_PORT = 10000; // Port for the HTTP server
