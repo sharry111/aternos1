@@ -76,28 +76,28 @@ function authenticateBot(bot) {
 // HTTP server to interact with the bot
 function startHttpServer(bot) {
   const server = http.createServer((req, res) => {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const command = url.pathname.slice(1); // Extract command from URL path
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const command = url.pathname.slice(1); // Extract command from URL path
 
-    if (command === 'status') {
-      const status = bot && bot.entity ? 'Online' : 'Offline';
+  if (command === 'status') {
+    const status = bot && bot.entity ? 'Online' : 'Offline';
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end(`Bot Status: ${status}`);
+  } else if (command.startsWith('say')) {
+    const chatMessage = decodeURIComponent(command.slice(4));
+    if (bot && bot.entity) {
+      bot.chat(chatMessage); // Correct function call
       res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end(`Bot Status: ${status}`);
-    } else if (command.startsWith('say')) {
-      const chatMessage = decodeURIComponent(command.slice(4));
-      if (bot && bot.entity) {
-        bot.chat(chatMessage);
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end(`Bot said: "${chatMessage}"`);
-      } else {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Bot is not online.');
-      }
+      res.end(`Bot said: "${chatMessage}"`);
     } else {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('Unknown command. Available commands: /status, /say/<message>');
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Bot is not online.');
     }
-  });
+  } else {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Unknown command. Available commands: /status, /say/<message>');
+  }
+});
 
   server.listen(config.httpPort, () => {
     console.log(`[HTTP Server] Listening on port ${config.httpPort}`);
