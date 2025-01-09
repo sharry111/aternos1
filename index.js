@@ -65,7 +65,7 @@ function authenticateBot(bot) {
     if (!isRegistered) {
       bot.chat(`/register ${config.botPassword} ${config.botPassword}`);
       console.log('[Bot] Sent register command.');
-      isRegistered = true; // Mark as registered after sending the register command
+      isRegistered = false; // Mark as registered after sending the register command
     } else {
       bot.chat(`/login ${config.botPassword}`);
       console.log('[Bot] Sent login command.');
